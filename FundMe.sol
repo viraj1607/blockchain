@@ -6,17 +6,17 @@ import {PriceConverter} from "./PriceConverter.sol";
 
 contract FundMe{
      using PriceConverter for uint256;
-     uint256 public minUsd=5e18;
+     uint256 public MIN_USD=5e18;
      address[] public funders;
      mapping(address funder=> uint256 amountFunded) public addressToAmountFunded;
-     address public owner;
+     address public immutable i_owner;
 
      constructor(){
-        owner=msg.sender;
+        i_owner=msg.sender;
      }
 
     function fund() public payable {
-        require(msg.value.getConversionRate() >= minUsd,"Didn't send enoght ETH");  //1e18=1ETH= 1*10**18
+        require(msg.value.getConversionRate() >= MIN_USD,"Didn't send enoght ETH");  //1e18=1ETH= 1*10**18
         funders.push(msg.sender);
         addressToAmountFunded[msg.sender]=addressToAmountFunded[msg.sender] + msg.value;
     }
@@ -42,7 +42,7 @@ contract FundMe{
     }
 
     modifier onlyOwner(){
-        require(msg.sender==owner,"only owner can call this function");
+        require(msg.sender==i_owner,"only owner can call this function");
         _;
     }
 }
